@@ -15,8 +15,9 @@ class client_socket:
             sys.exit()
         self.host = sys.argv[1]
         self.port = int(sys.argv[2])
-        self.nick_name = sys.argv[3]
-        if(len(sys.argv)!=4):
+        self.nick_name = ""
+        self.val = 1
+        if(len(sys.argv) !=3 ):
             sys.exit()
         try:
             self.client_sock.connect((self.host,self.port))
@@ -33,14 +34,37 @@ class client_socket:
                 data = self.client_sock.recv(1024)
                 if (len(data)!=0):
                     msg = data.decode('utf-8')
-                    print(msg)
-                    time.sleep(0.1)
+                    if(msg == "Okay"):
+                        self.val = 0
+                    else:
+                        print(msg)
+                    time.sleep(0.01)
             except IOError:
                 continue
     def inputdata(self):
         try:
-            data = input()
+            try:
+                data = input()
+            except IOError:
+                pass
+            if self.val == 1:
+                self.nick_name = data
             data1 = data.strip('MSG')
+            if self.val == 1:
+                time.sleep(0.01)
+                spc = "User_name >>"
+                print(spc)
+                for i in range(len(spc)):
+                    print(" ",end="")
+                print(data)
+            else:
+                time.sleep(0.01)
+                var = self.nick_name + " >> Message"
+                print(var)
+                spc = len(var)
+                for i in range(spc):
+                    print(" ",end="")
+                print("Send >> ",data)
             data = bytes(data,'utf-8')
             try:
                 self.client_sock.send(data)
@@ -48,7 +72,7 @@ class client_socket:
                     print("This client has been disconnected")
                     self.client_sock.close()
                     sys.exit(1)
-                time.sleep(0.1)
+                time.sleep(0.01)
             except:
                 pass
         except IOError:
